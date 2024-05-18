@@ -126,3 +126,28 @@ button {
     margin: 0 10px;
     cursor: pointer;
 }
+
+
+.starting-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(to right, var(--pink), var(--background)); /* Same background as main page */
+    color: var(--text);
+}
+.starting-page img {
+    max-width: 100%; /* Ensure the image fits within its container */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 20px; /* Space between the image and text */
+}
+.starting-page h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.starting-page p {
+    font-size: 1.2em;
+    text-align: center;
+}

@@ -1,18 +1,25 @@
 document.addEventListener("DOMContentLoaded", ()=>{
-    const storedTasks = JSON.parse(localStorage.getItem('tasks'))
+    const storedTasks = JSON.parse(localStorage.getItem('tasks'));
 
     if(storedTasks){
-        storedTasks.forEach((task)=> tasks.push(task))
+        storedTasks.forEach((task)=> tasks.push(task));
         updateTasksList();
         updateStats();
     }
-})
+
+    // After 5 seconds, hide the starting page and show the main app page
+    setTimeout(function(){
+        document.querySelector('.starting-page').style.display = 'none';
+        document.querySelector('.container').style.display = 'flex';
+    }, 5000);
+});
 
 let tasks = [];
 
 const saveTasks = ()=>{    //refresh dile jno sob task remove na hoy sejnno
-    localStorage.setItem('tasks',JSON.stringify(tasks))
+    localStorage.setItem('tasks', JSON.stringify(tasks));
 }
+
 const addTask = () => {
     const taskInput = document.getElementById('taskInput');
     const text = taskInput.value.trim();  // Ensure no new task is added with only spaces
@@ -55,16 +62,12 @@ const updateStats = () => {
     const progress = totalTasks > 0 ? (completeTasks / totalTasks) * 100 : 0;
     const progressBar = document.getElementById('progress');
 
-
     progressBar.style.width = `${progress}%`;
-    document.getElementById(
-        'numbers'
-    ).innerText = `${completeTasks} / ${totalTasks}`;
+    document.getElementById('numbers').innerText = `${completeTasks} / ${totalTasks}`;
 
-    if(tasks.length && completeTasks === totalTasks)
-        {
-            blashConfetti();
-        }
+    if(tasks.length && completeTasks === totalTasks) {
+        blashConfetti();
+    }
 };
 
 const updateTasksList = () => {
@@ -97,45 +100,44 @@ document.getElementById("taskForm").addEventListener('submit', function (e) {
     addTask();
 });
 
-
 const blashConfetti = () => {
     const count = 200,
-  defaults = {
-    origin: { y: 0.7 },
-  };
+        defaults = {
+            origin: { y: 0.7 },
+        };
 
-function fire(particleRatio, opts) {
-  confetti(
-    Object.assign({}, defaults, opts, {
-      particleCount: Math.floor(count * particleRatio),
-    })
-  );
-}
+    function fire(particleRatio, opts) {
+        confetti(
+            Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(count * particleRatio),
+            })
+        );
+    }
 
-fire(0.25, {
-  spread: 26,
-  startVelocity: 55,
-});
+    fire(0.25, {
+        spread: 26,
+        startVelocity: 55,
+    });
 
-fire(0.2, {
-  spread: 60,
-});
+    fire(0.2, {
+        spread: 60,
+    });
 
-fire(0.35, {
-  spread: 100,
-  decay: 0.91,
-  scalar: 0.8,
-});
+    fire(0.35, {
+        spread: 100,
+        decay: 0.91,
+        scalar: 0.8,
+    });
 
-fire(0.1, {
-  spread: 120,
-  startVelocity: 25,
-  decay: 0.92,
-  scalar: 1.2,
-});
+    fire(0.1, {
+        spread: 120,
+        startVelocity: 25,
+        decay: 0.92,
+        scalar: 1.2,
+    });
 
-fire(0.1, {
-  spread: 120,
-  startVelocity: 45,
-});
+    fire(0.1, {
+        spread: 120,
+        startVelocity: 45,
+    });
 }
