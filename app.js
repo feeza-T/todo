@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
         updateStats();
     }
 
-    // After 5 seconds, hide the starting page and show the main app page
     setTimeout(function(){
         document.querySelector('.starting-page').style.display = 'none';
         document.querySelector('.container').style.display = 'flex';
@@ -16,13 +15,13 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
 let tasks = [];
 
-const saveTasks = ()=>{    //refresh dile jno sob task remove na hoy sejnno
+const saveTasks = ()=>{    
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
 const addTask = () => {
     const taskInput = document.getElementById('taskInput');
-    const text = taskInput.value.trim();  // Ensure no new task is added with only spaces
+    const text = taskInput.value.trim();  
     if (text) {
         tasks.push({ text: text, completed: false });
         taskInput.value = "";
@@ -56,6 +55,13 @@ const editTask = (index) => {
     saveTasks();
 };
 
+const clearAllTasks = () => {
+    tasks = [];
+    updateTasksList();
+    updateStats();
+    saveTasks();
+};
+
 const updateStats = () => {
     const completeTasks = tasks.filter(task => task.completed).length;  
     const totalTasks = tasks.length;
@@ -76,29 +82,87 @@ const updateTasksList = () => {
 
     tasks.forEach((task, index) => {
         const listItem = document.createElement("li");
+        listItem.draggable = true;
+        listItem.classList.add("taskItem");
+        listItem.dataset.index = index;
 
         listItem.innerHTML = `
-        <div class="taskItem">
-            <div class="task ${task.completed ? 'completed' : ''}">
-                <input type="checkbox" class="checkbox" ${task.completed ? "checked" : ""} />
-                <p>${task.text}</p>
-            </div>
-            <div class="icons">
-                <i class="fa-regular fa-pen-to-square" onclick="editTask(${index})"></i>
-                <i class="fa-solid fa-trash" onclick="deleteTask(${index})"></i>
-            </div>
+        <div class="task ${task.completed ? 'completed' : ''}">
+            <input type="checkbox" class="checkbox" ${task.completed ? "checked" : ""} />
+            <p>${task.text}</p>
+        </div>
+        <div class="icons">
+            <i class="fa-regular fa-pen-to-square" onclick="editTask(${index})"></i>
+            <i class="fa-solid fa-trash" onclick="deleteTask(${index})"></i>
         </div>
         `;
 
         listItem.querySelector(".checkbox").addEventListener("change", () => toggleTaskComplete(index));
         taskList.append(listItem);
     });
+
+    addDragAndDrop();
+};
+
+const addDragAndDrop = () => {
+    const taskList = document.getElementById('task-list');
+    const taskItems = taskList.querySelectorAll('.taskItem');
+
+    taskItems.forEach(item => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('dragend', handleDragEnd);
+        item.addEventListener('drop', handleDrop);
+    });
+};
+
+const handleDragStart = (e) => {
+    e.target.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', e.target.dataset.index);
+};
+
+const handleDragOver = (e) => {
+    e.preventDefault();
+    const draggingItem = document.querySelector('.dragging');
+    const taskList = document.getElementById('task-list');
+    const taskItems = Array.from(taskList.querySelectorAll('.taskItem:not(.dragging)'));
+
+    const nextItem = taskItems.find(item => {
+        const rect = item.getBoundingClientRect();
+        return e.clientY < rect.top + rect.height / 2;
+    });
+
+    taskList.insertBefore(draggingItem, nextItem);
+};
+
+const handleDragEnd = (e) => {
+    e.target.classList.remove('dragging');
+    updateTaskOrder();
+};
+
+const handleDrop = (e) => {
+    e.preventDefault();
+};
+
+const updateTaskOrder = () => {
+    const taskList = document.getElementById('task-list');
+    const taskItems = taskList.querySelectorAll('.taskItem');
+
+    tasks = Array.from(taskItems).map((item, index) => {
+        const indexData = item.dataset.index;
+        return tasks[indexData];
+    });
+
+    saveTasks();
+    updateTasksList();
 };
 
 document.getElementById("taskForm").addEventListener('submit', function (e) {
     e.preventDefault();
     addTask();
 });
+
+document.getElementById("clearAll").addEventListener('click', clearAllTasks);
 
 const blashConfetti = () => {
     const count = 200,
